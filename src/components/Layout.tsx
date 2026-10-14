@@ -23,7 +23,7 @@ export default function Layout() {
   const moreActive = more.some(([to]) => loc.pathname.startsWith(to))
   return (
     <div className="min-h-screen md:flex">
-      <aside className="hidden w-60 shrink-0 flex-col bg-black p-4 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col overflow-y-auto bg-black p-4 md:flex">
         <p className="mb-6 text-xl font-bold text-white">Bharat<span className="text-brand">Tube</span> <span className="block text-sm font-normal text-neutral-400">Team Portal</span></p>
         <nav className="flex-1 space-y-1">{links.map(([to, l]) => <NavLink key={to} to={to} end={to === '/'} className={cls}>{l}{dot(to)}</NavLink>)}</nav>
         <p className="mb-2 break-all text-sm text-neutral-400">{session?.user.email} ({profile?.role})</p>
