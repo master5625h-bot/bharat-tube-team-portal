@@ -8,23 +8,27 @@ export const useAuth = () => useContext(AuthCtx)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
+  const [sessionReady, setSessionReady] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
+  // id of the user whose profile has been fetched; avoids showing "waiting" before the fetch ends
+  const [loadedFor, setLoadedFor] = useState<string | null>(null)
   const [tick, setTick] = useState(0)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setSessionReady(true) })
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
     return () => data.subscription.unsubscribe()
   }, [])
 
+  const userId = session?.user.id ?? null
   useEffect(() => {
     let live = true
-    if (!session) { setProfile(null); setLoading(false); return }
-    supabase.from('profiles').select('*').eq('id', session.user.id).single()
-      .then(({ data }) => { if (live) { setProfile(data as Profile | null); setLoading(false) } })
+    if (!userId) { setProfile(null); setLoadedFor(null); return }
+    supabase.from('profiles').select('*').eq('id', userId).single()
+      .then(({ data }) => { if (live) { setProfile(data as Profile | null); setLoadedFor(userId) } })
     return () => { live = false }
-  }, [session, tick])
+  }, [userId, tick])
 
+  const loading = !sessionReady || (userId !== null && loadedFor !== userId)
   return <AuthCtx.Provider value={{ session, profile, loading, refresh: () => setTick(t => t + 1) }}>{children}</AuthCtx.Provider>
 }
