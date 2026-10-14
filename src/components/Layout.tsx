@@ -19,16 +19,18 @@ export default function Layout() {
         <p className="mb-2 break-all text-sm text-neutral-400">{session?.user.email} ({profile?.role})</p>
         <button onClick={() => supabase.auth.signOut()} className="min-h-11 rounded-lg border border-neutral-600 text-white">Log out</button>
       </aside>
-      <header className="flex items-center justify-between bg-black px-4 py-3 md:hidden">
-        <p className="font-bold text-white">Bharat<span className="text-brand">Tube</span></p>
-        <button onClick={() => supabase.auth.signOut()} className="min-h-11 px-3 text-white">Log out</button>
-      </header>
-      <main className="flex-1 p-4 pb-24 md:p-8"><Outlet /></main>
-      <nav className="fixed inset-x-0 bottom-0 grid grid-cols-6 border-t border-neutral-700 bg-black md:hidden">
-        {links.map(([to, l]) => (
-          <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `py-3 text-center text-xs ${isActive ? 'text-brand font-bold' : 'text-neutral-300'}`}>{l}</NavLink>
-        ))}
-      </nav>
+      <div className="sticky top-0 z-10 md:hidden">
+        <header className="flex items-center justify-between bg-black px-4 py-2">
+          <p className="font-bold text-white">Bharat<span className="text-brand">Tube</span></p>
+          <button onClick={() => supabase.auth.signOut()} className="min-h-11 px-3 text-white">Log out</button>
+        </header>
+        <nav className="flex gap-1 overflow-x-auto border-t border-neutral-800 bg-black px-2 pb-2">
+          {links.map(([to, l]) => (
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 shrink-0 rounded-lg px-3 py-2.5 text-sm font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200'}`}>{l}</NavLink>
+          ))}
+        </nav>
+      </div>
+      <main className="flex-1 p-4 md:p-8"><Outlet /></main>
     </div>
   )
 }
