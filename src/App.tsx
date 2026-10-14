@@ -11,6 +11,12 @@ import Attendance from './pages/Attendance'
 import Reports from './pages/Reports'
 import Announcements from './pages/Announcements'
 import Team from './pages/Team'
+import Ideas from './pages/Ideas'
+import ContentCalendar from './pages/ContentCalendar'
+import Polls from './pages/Polls'
+import Checkins from './pages/Checkins'
+import Resources from './pages/Resources'
+import Activity from './pages/Activity'
 
 function Gate() {
   const { session, profile, loading, refresh } = useAuth()
@@ -32,6 +38,12 @@ function Gate() {
         <Route path="reports" element={<Reports />} />
         <Route path="announcements" element={<Announcements />} />
         <Route path="team" element={<Team />} />
+        <Route path="ideas" element={<Ideas />} />
+        <Route path="calendar" element={<ContentCalendar />} />
+        <Route path="polls" element={<Polls />} />
+        <Route path="checkin" element={<Checkins />} />
+        <Route path="resources" element={<Resources />} />
+        <Route path="activity" element={<Activity />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Route>
     </Routes>

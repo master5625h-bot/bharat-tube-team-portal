@@ -1,16 +1,23 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 
-const links = [
-  ['/', 'Dashboard'], ['/tasks', 'Tasks'], ['/attendance', 'Attendance'],
-  ['/reports', 'Reports'], ['/announcements', 'News'], ['/team', 'Team'],
+const main = [['/', 'Home'], ['/tasks', 'Tasks'], ['/ideas', 'Ideas'], ['/team', 'Team']]
+const more = [
+  ['/attendance', 'Attendance'], ['/reports', 'Reports'], ['/announcements', 'News'], ['/calendar', 'Content calendar'],
+  ['/polls', 'Polls'], ['/checkin', 'Daily check-in'], ['/resources', 'Resources'], ['/activity', 'Activity'],
 ]
+const links = [...main, ...more]
 const cls = ({ isActive }: { isActive: boolean }) =>
   `block rounded-lg px-3 py-3 font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200 hover:bg-neutral-800'}`
 
 export default function Layout() {
   const { profile, session } = useAuth()
+  const loc = useLocation()
+  const [open, setOpen] = useState(false)
+  useEffect(() => setOpen(false), [loc.pathname])
+  const moreActive = more.some(([to]) => loc.pathname.startsWith(to))
   return (
     <div className="min-h-screen md:flex">
       <aside className="hidden w-60 shrink-0 flex-col bg-black p-4 md:flex">
@@ -24,11 +31,16 @@ export default function Layout() {
           <p className="font-bold text-white">Bharat<span className="text-brand">Tube</span></p>
           <button onClick={() => supabase.auth.signOut()} className="min-h-11 px-3 text-white">Log out</button>
         </header>
-        <nav className="flex overflow-x-auto border-t border-neutral-800 bg-black px-0.5 pb-2">
-          {links.map(([to, l]) => (
+        <nav className="flex border-t border-neutral-800 bg-black px-0.5 pb-2">
+          {main.map(([to, l]) => (
             <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-lg px-1 py-2.5 text-center text-sm font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200'}`}>{l}</NavLink>
           ))}
+          <button aria-expanded={open} onClick={() => setOpen(!open)} className={`min-h-11 flex-1 rounded-lg px-1 py-2.5 text-center text-sm font-medium ${moreActive || open ? 'bg-brand text-white' : 'text-neutral-200'}`}>More ▾</button>
         </nav>
+        {open && <div className="grid grid-cols-2 gap-1 border-t border-neutral-800 bg-black p-2 shadow-lg">
+          {more.map(([to, l]) => (
+            <NavLink key={to} to={to} className={({ isActive }) => `min-h-11 rounded-lg px-3 py-3 text-sm font-medium ${isActive ? 'bg-brand text-white' : 'bg-neutral-900 text-neutral-100'}`}>{l}</NavLink>
+          ))}</div>}
       </div>
       <main className="flex-1 p-4 md:p-8"><Outlet /></main>
     </div>
