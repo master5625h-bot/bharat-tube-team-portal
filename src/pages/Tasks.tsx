@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase, type Profile } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
+import Comments, { type Comment } from '../components/Comments'
 import { Badge, Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Select, Textarea } from '../components/ui'
 
 type Task = { id: string; title: string; description: string; status: string; priority: string; due_date: string | null; assigned_to: string | null }
@@ -11,6 +12,7 @@ export default function Tasks() {
   const isAdmin = profile?.role === 'admin'
   const { rows, loading, error, reload } = useTable<Task>('tasks')
   const team = useTable<Profile>('profiles')
+  const comments = useTable<Comment>('task_comments')
   const [f, setF] = useState({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: '' })
   const [q, setQ] = useState('')
   const [filter, setFilter] = useState('all')
@@ -57,6 +59,7 @@ export default function Tasks() {
             {t.description && <p className="mt-1 text-neutral-700">{t.description}</p>}
             <p className="mt-2 text-sm text-neutral-600">{name(t.assigned_to)}{t.due_date ? ` · due ${t.due_date}` : ''}</p>
             <div className="mt-3 max-w-xs"><Select value={t.status} onChange={e => setStatus(t.id, e.target.value)}><option value="todo">To do</option><option value="in_progress">In progress</option><option value="done">Done</option></Select></div>
+            <Comments taskId={t.id} comments={comments.rows} people={team.rows} onChange={comments.reload} />
           </Card>))}</div>
       )}
     </div>
