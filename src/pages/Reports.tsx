@@ -71,7 +71,7 @@ export default function Reports() {
         <Field label="Plan for next week"><Textarea value={f.next_plan} onChange={e => setF({ ...f, next_plan: e.target.value })} /></Field>
         <Field label="Attach files (PNG or PDF, up to 5 files, 5 MB each)">
           <input type="file" multiple accept="image/png,application/pdf" onChange={e => pick(e.target.files)}
-            className="block min-h-11 w-full rounded-lg border border-neutral-300 bg-white p-2" />
+            className="block min-h-11 w-full rounded-xl border border-neutral-200 bg-white p-2" />
         </Field>
         {picked.length > 0 && <ul className="text-sm text-neutral-700">{picked.map(p => <li key={p.name}>{p.name} ({kb(p.size)})</li>)}</ul>}
         {err && <ErrorMsg msg={err} />}{ok && <p role="status" className="text-green-800">{ok}</p>}
@@ -87,7 +87,7 @@ export default function Reports() {
             {files.rows.filter(x => x.report_id === r.id).length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {files.rows.filter(x => x.report_id === r.id).map(x => (
-                  <button key={x.id} onClick={() => open(x.path)} className="min-h-11 max-w-full truncate rounded-lg border border-neutral-300 px-3 text-sm underline">
+                  <button key={x.id} onClick={() => open(x.path)} className="min-h-11 max-w-full truncate rounded-xl border border-neutral-200 px-3 text-sm underline">
                     {x.mime === 'application/pdf' ? 'PDF' : 'Image'}: {x.filename} ({kb(x.size_bytes)})
                   </button>
                 ))}

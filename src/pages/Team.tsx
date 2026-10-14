@@ -41,7 +41,7 @@ export default function TeamPage() {
 
   const chip = (id: string, label: string, n: number) => (
     <button key={id} onClick={() => setSel(id)} aria-pressed={sel === id}
-      className={`min-h-11 shrink-0 rounded-full border px-4 text-sm font-medium ${sel === id ? 'border-brand bg-brand text-white' : 'border-neutral-300 bg-white'}`}>
+      className={`min-h-11 shrink-0 rounded-full border px-4 text-sm font-medium ${sel === id ? 'border-brand bg-brand text-white' : 'border-neutral-200 bg-white'}`}>
       {label} ({n})
     </button>
   )

@@ -54,7 +54,7 @@ export default function Ideas() {
           <Card key={i.id}>
             <div className="flex items-start gap-3">
               <button aria-label={mine(i.id) ? 'Remove vote' : 'Vote'} onClick={() => toggle(i.id)}
-                className={`flex min-h-14 min-w-14 flex-col items-center justify-center rounded-lg border-2 font-bold ${mine(i.id) ? 'border-brand bg-brand text-white' : 'border-neutral-300'}`}>
+                className={`flex min-h-14 min-w-14 flex-col items-center justify-center rounded-xl border-2 font-bold ${mine(i.id) ? 'border-brand bg-brand text-white' : 'border-neutral-200'}`}>
                 <span>▲</span><span>{count(i.id)}</span></button>
               <div className="min-w-0 flex-1">
                 <p className="text-lg font-semibold">{i.title}</p>

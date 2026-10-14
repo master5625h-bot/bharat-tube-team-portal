@@ -33,9 +33,9 @@ export default function AttendanceCalendar({ rows, people, isAdmin, meId }: {
   return (
     <Card className="mb-4">
       <div className="mb-3 flex items-center justify-between">
-        <button aria-label="Previous month" className="min-h-11 min-w-11 rounded-lg border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}>‹</button>
+        <button aria-label="Previous month" className="min-h-11 min-w-11 rounded-xl border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}>‹</button>
         <h2 className="text-lg font-bold">{month.toLocaleString('en', { month: 'long', year: 'numeric' })}</h2>
-        <button aria-label="Next month" className="min-h-11 min-w-11 rounded-lg border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}>›</button>
+        <button aria-label="Next month" className="min-h-11 min-w-11 rounded-xl border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}>›</button>
       </div>
       {isAdmin && (
         <div className="mb-3">
@@ -54,7 +54,7 @@ export default function AttendanceCalendar({ rows, people, isAdmin, meId }: {
           const counts = (s: string) => list.filter(r => r.status === s).length
           return (
             <button key={i} onClick={() => setSel(k)} aria-label={`${k}, ${list.length} records`}
-              className={`flex min-h-14 flex-col items-center justify-start rounded-lg border p-1 text-sm ${k === sel ? 'border-brand bg-orange-50' : 'border-neutral-200'} ${k === today ? 'font-bold' : ''}`}>
+              className={`flex min-h-14 flex-col items-center justify-start rounded-xl border p-1 text-sm ${k === sel ? 'border-brand bg-orange-50' : 'border-neutral-200'} ${k === today ? 'font-bold' : ''}`}>
               <span>{d}</span>
               {who === 'all'
                 ? <span className="mt-0.5 flex flex-wrap justify-center gap-x-1 text-xs font-semibold">

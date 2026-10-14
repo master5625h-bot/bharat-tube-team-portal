@@ -10,7 +10,7 @@ const more = [
 ]
 const links = [...main, ...more]
 const cls = ({ isActive }: { isActive: boolean }) =>
-  `block rounded-lg px-3 py-3 font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200 hover:bg-neutral-800'}`
+  `block rounded-xl px-3 py-3 font-semibold ${isActive ? 'ig-bg text-white' : 'text-neutral-200 hover:bg-neutral-800'}`
 
 export default function Layout() {
   const { profile, session } = useAuth()
@@ -24,25 +24,25 @@ export default function Layout() {
         <p className="mb-6 text-xl font-bold text-white">Bharat<span className="text-brand">Tube</span> <span className="block text-sm font-normal text-neutral-400">Team Portal</span></p>
         <nav className="flex-1 space-y-1">{links.map(([to, l]) => <NavLink key={to} to={to} end={to === '/'} className={cls}>{l}</NavLink>)}</nav>
         <p className="mb-2 break-all text-sm text-neutral-400">{session?.user.email} ({profile?.role})</p>
-        <button onClick={() => supabase.auth.signOut()} className="min-h-11 rounded-lg border border-neutral-600 text-white">Log out</button>
+        <button onClick={() => supabase.auth.signOut()} className="min-h-11 rounded-full border border-neutral-600 text-white">Log out</button>
       </aside>
-      <div className="sticky top-0 z-10 md:hidden">
-        <header className="flex items-center justify-between bg-black px-4 py-2">
+      <div className="sticky top-0 z-10 md:hidden"><div className="ig-bg h-0.5" />
+        <header className="flex items-center justify-between bg-black px-4 py-2"><span className="sr-only">BharatTube</span>
           <p className="font-bold text-white">Bharat<span className="text-brand">Tube</span></p>
           <button onClick={() => supabase.auth.signOut()} className="min-h-11 px-3 text-white">Log out</button>
         </header>
-        <nav className="flex border-t border-neutral-800 bg-black px-0.5 pb-2">
+        <nav className="flex gap-1 border-t border-neutral-800 bg-black px-2 pb-2 pt-1">
           {main.map(([to, l]) => (
-            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-lg px-1 py-2.5 text-center text-sm font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200'}`}>{l}</NavLink>
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-full px-1 py-2.5 text-center text-sm font-medium ${isActive ? 'ig-bg text-white' : 'text-neutral-200'}`}>{l}</NavLink>
           ))}
-          <button aria-expanded={open} onClick={() => setOpen(!open)} className={`min-h-11 flex-1 rounded-lg px-1 py-2.5 text-center text-sm font-medium ${moreActive || open ? 'bg-brand text-white' : 'text-neutral-200'}`}>More ▾</button>
+          <button aria-expanded={open} onClick={() => setOpen(!open)} className={`min-h-11 flex-1 rounded-full px-1 py-2.5 text-center text-sm font-medium ${moreActive || open ? 'ig-bg text-white' : 'text-neutral-200'}`}>More ▾</button>
         </nav>
-        {open && <div className="grid grid-cols-2 gap-1 border-t border-neutral-800 bg-black p-2 shadow-lg">
+        {open && <div className="grid grid-cols-2 gap-2 rounded-b-3xl border-t border-neutral-800 bg-black p-3 shadow-2xl">
           {more.map(([to, l]) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `min-h-11 rounded-lg px-3 py-3 text-sm font-medium ${isActive ? 'bg-brand text-white' : 'bg-neutral-900 text-neutral-100'}`}>{l}</NavLink>
+            <NavLink key={to} to={to} className={({ isActive }) => `min-h-11 rounded-2xl px-3 py-3 text-sm font-semibold ${isActive ? 'ig-bg text-white' : 'bg-neutral-900 text-neutral-100'}`}>{l}</NavLink>
           ))}</div>}
       </div>
-      <main className="flex-1 p-4 md:p-8"><Outlet /></main>
+      <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-16 md:p-8"><Outlet /></main>
     </div>
   )
 }

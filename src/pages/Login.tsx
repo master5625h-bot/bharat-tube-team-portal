@@ -29,7 +29,8 @@ export default function Login() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center p-4">
-      <p className="mb-6 text-center text-3xl font-bold">Bharat<span className="text-brand">Tube</span> Team Portal</p>
+      <div className="mb-6 text-center"><span className="ig-ring mx-auto mb-3 inline-flex rounded-full p-[3px]"><span className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-black text-3xl font-extrabold text-white">B<span className="text-brand">T</span></span></span>
+        <p className="text-3xl font-extrabold tracking-tight">Bharat<span className="text-brand">Tube</span></p><p className="text-neutral-600">Team Portal</p></div>
       <Card>
         {!configured && <ErrorMsg msg="Supabase is not configured yet (missing environment values)." />}
         <form onSubmit={submit} className="space-y-4">
@@ -38,7 +39,7 @@ export default function Login() {
           <Field label="Email"><Input type="email" required value={email} onChange={e => setEmail(e.target.value)} /></Field>
           {mode !== 'reset' && <Field label="Password"><Input type="password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)} /></Field>}
           {err && <ErrorMsg msg={err} />}
-          {ok && <p role="status" className="rounded-lg bg-green-50 p-3 text-green-800">{ok}</p>}
+          {ok && <p role="status" className="rounded-xl bg-green-50 p-3 text-green-800">{ok}</p>}
           <Btn disabled={busy} className="w-full">{busy ? 'Please wait...' : mode === 'login' ? 'Log in' : mode === 'signup' ? 'Sign up' : 'Send reset link'}</Btn>
         </form>
         <div className="mt-4 flex justify-between text-sm">

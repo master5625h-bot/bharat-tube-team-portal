@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 
 const cache = new Map<string, { url: string; at: number }>()
 
-export function Avatar({ path, name, size = 40 }: { path?: string | null; name: string; size?: number }) {
+export function Avatar({ path, name, size = 40, ring = true }: { path?: string | null; name: string; size?: number; ring?: boolean }) {
   const [url, setUrl] = useState<string | null>(null)
   useEffect(() => {
     let live = true
@@ -16,8 +16,8 @@ export function Avatar({ path, name, size = 40 }: { path?: string | null; name: 
     return () => { live = false }
   }, [path])
   const letter = (name.trim()[0] ?? '?').toUpperCase()
-  const style = { width: size, height: size }
-  return url
-    ? <img src={url} alt={name} style={style} className="shrink-0 rounded-full object-cover" />
-    : <span style={{ ...style, fontSize: size * 0.45 }} className="inline-flex shrink-0 items-center justify-center rounded-full bg-neutral-800 font-bold text-white" aria-label={name}>{letter}</span>
+  const inner = url
+    ? <img src={url} alt={name} style={{ width: size, height: size }} className="rounded-full border-2 border-white object-cover" />
+    : <span style={{ width: size, height: size, fontSize: size * 0.42 }} className="inline-flex items-center justify-center rounded-full border-2 border-white bg-neutral-900 font-bold text-white" aria-label={name}>{letter}</span>
+  return ring ? <span className="ig-ring inline-flex shrink-0 rounded-full p-[2px]">{inner}</span> : <span className="inline-flex shrink-0">{inner}</span>
 }

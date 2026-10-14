@@ -45,15 +45,15 @@ export default function ContentCalendar() {
       {loading ? <Loading /> : <>
         <Card className="mb-4">
           <div className="mb-3 flex items-center justify-between">
-            <button aria-label="Previous month" className="min-h-11 min-w-11 rounded-lg border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}>‹</button>
+            <button aria-label="Previous month" className="min-h-11 min-w-11 rounded-xl border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}>‹</button>
             <h2 className="text-lg font-bold">{month.toLocaleString('en', { month: 'long', year: 'numeric' })}</h2>
-            <button aria-label="Next month" className="min-h-11 min-w-11 rounded-lg border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}>›</button>
+            <button aria-label="Next month" className="min-h-11 min-w-11 rounded-xl border text-xl" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}>›</button>
           </div>
           <div className="grid grid-cols-7 gap-1 text-center text-sm">
             {DOW.map(d => <div key={d} className="font-medium text-neutral-600">{d}</div>)}
             {cells.map((d, i) => d === null ? <div key={i} /> : (
               <button key={i} onClick={() => setSel(key(d))} aria-label={`${key(d)}, ${(byDay.get(key(d)) ?? []).length} planned`}
-                className={`min-h-12 rounded-lg border p-1 ${key(d) === sel ? 'border-brand bg-red-50' : 'border-neutral-200'} ${key(d) === today ? 'font-bold' : ''}`}>
+                className={`min-h-12 rounded-xl border p-1 ${key(d) === sel ? 'border-brand bg-red-50' : 'border-neutral-200'} ${key(d) === today ? 'font-bold' : ''}`}>
                 <div>{d}</div>
                 {(byDay.get(key(d)) ?? []).length > 0 && <div className="mx-auto mt-0.5 h-2 w-2 rounded-full bg-brand" />}
               </button>))}

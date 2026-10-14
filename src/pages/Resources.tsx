@@ -67,8 +67,8 @@ export default function Resources() {
           <Card key={r.id}>
             <p className="text-lg font-semibold">{r.title}</p>
             {r.kind === 'link'
-              ? <a className="block min-h-11 break-all py-2 text-brand underline" href={r.url!} target="_blank" rel="noopener noreferrer">{r.url}</a>
-              : <button className="min-h-11 py-2 text-left text-brand underline" onClick={() => open(r)}>Open / download: {r.filename}</button>}
+              ? <a className="block min-h-11 break-all py-2 font-semibold text-brand underline" href={r.url!} target="_blank" rel="noopener noreferrer">{r.url}</a>
+              : <button className="min-h-11 py-2 text-left font-semibold text-brand underline" onClick={() => open(r)}>Open / download: {r.filename}</button>}
             {isAdmin && <button className="min-h-11 text-red-700 underline" onClick={() => del(r)}>Delete</button>}
           </Card>))}</div>
       )}

@@ -62,11 +62,11 @@ export default function Polls() {
                 const n = res.find(r => r.option_id === op.id)?.votes ?? 0
                 const pct = total ? Math.round(n * 100 / total) : 0
                 return showResults ? (
-                  <div key={op.id} className={`relative overflow-hidden rounded-lg border ${my?.option_id === op.id ? 'border-brand' : 'border-neutral-300'}`}>
+                  <div key={op.id} className={`relative overflow-hidden rounded-xl border ${my?.option_id === op.id ? 'border-brand' : 'border-neutral-200'}`}>
                     <div className="absolute inset-y-0 left-0 bg-red-100" style={{ width: `${pct}%` }} />
                     <p className="relative flex min-h-11 items-center justify-between px-3"><span>{op.label}{my?.option_id === op.id ? ' ✓' : ''}</span><span className="font-semibold">{n} ({pct}%)</span></p>
                   </div>
-                ) : <button key={op.id} onClick={() => vote(p.id, op.id)} className="min-h-11 w-full rounded-lg border border-neutral-300 px-3 text-left font-medium hover:bg-neutral-50">{op.label}</button>
+                ) : <button key={op.id} onClick={() => vote(p.id, op.id)} className="min-h-11 w-full rounded-xl border border-neutral-200 px-3 text-left font-medium hover:bg-neutral-50">{op.label}</button>
               })}</div>
               <p className="mt-2 text-sm text-neutral-600">{total} vote{total === 1 ? '' : 's'}{!showResults && ' · vote karne ke baad results dikhenge'}</p>
               {isAdmin && <div className="mt-2 flex gap-4">

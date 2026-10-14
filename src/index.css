@@ -2,5 +2,12 @@
 @theme {
   --color-brand: #ff4b1f;
   --color-brand-dark: #d93a12;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-body { @apply bg-neutral-50 text-neutral-900 text-base antialiased; }
+body { @apply bg-white text-neutral-900 text-base antialiased; letter-spacing: -0.005em; }
+.ig-bg { background: linear-gradient(45deg, #fd8d32 0%, #fa5a3c 30%, #d6249f 65%, #8a3ab9 100%); }
+.ig-ring { background: conic-gradient(from 210deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75); }
+.ig-text { background: linear-gradient(45deg, #fa7e1e, #d62976 55%, #962fbf); -webkit-background-clip: text; background-clip: text; color: transparent; }
+button, a { transition: transform .12s ease, background-color .15s ease, opacity .15s ease, box-shadow .15s ease; }
+button:active:not(:disabled) { transform: scale(0.97); }
+input:focus, textarea:focus, select:focus { outline: 2px solid #d6249f55; outline-offset: 1px; border-color: #d62976; }

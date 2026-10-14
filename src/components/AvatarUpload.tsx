@@ -47,7 +47,7 @@ export default function AvatarUpload({ onDone }: { onDone: () => void }) {
       <h2 className="mb-3 font-bold">My profile photo</h2>
       <div className="flex items-center gap-4">
         <Avatar path={profile.avatar_url} name={profile.full_name || profile.email} size={72} />
-        <label className="inline-flex min-h-11 cursor-pointer items-center rounded-lg bg-brand px-4 py-2 font-semibold text-white">
+        <label className="inline-flex min-h-11 cursor-pointer items-center rounded-xl bg-brand px-4 py-2 font-semibold text-white">
           {busy ? 'Uploading...' : profile.avatar_url ? 'Change photo' : 'Upload photo'}
           <input type="file" accept="image/*" className="sr-only" disabled={busy} onChange={pick} />
         </label>
