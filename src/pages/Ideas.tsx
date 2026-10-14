@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
-import { usePeople } from '../lib/people'
+import { usePeople, useOnce } from '../lib/people'
 import { Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Select, Textarea } from '../components/ui'
 
 type Idea = { id: string; title: string; description: string; status: string; created_by: string; created_at: string }
@@ -22,19 +22,20 @@ export default function Ideas() {
   const mine = (id: string) => votes.rows.some(v => v.idea_id === id && v.user_id === profile?.id)
   const sorted = [...ideas.rows].sort((a, b) => count(b.id) - count(a.id) || +new Date(b.created_at) - +new Date(a.created_at))
 
-  async function add(e: FormEvent) {
-    e.preventDefault(); setErr('')
-    const { error } = await supabase.from('ideas').insert(f)
+  const once = useOnce()
+  const add = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr('')
+    const { error } = await supabase.from('ideas').insert({ title: f.title.trim(), description: f.description.trim() })
     if (error) setErr(error.message); else { setF({ title: '', description: '' }); ideas.reload() }
-  }
-  async function toggle(id: string) {
+  }) }
+  const toggle = (id: string) => once(async () => {
     setErr('')
     const q = mine(id)
       ? supabase.from('idea_votes').delete().eq('idea_id', id).eq('user_id', profile!.id)
       : supabase.from('idea_votes').insert({ idea_id: id })
     const { error } = await q
     if (error) setErr(error.message); votes.reload()
-  }
+  })
   async function setStatus(id: string, status: string) {
     const { error } = await supabase.from('ideas').update({ status }).eq('id', id)
     if (error) setErr(error.message); ideas.reload()

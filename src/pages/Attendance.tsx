@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase, type Profile } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
+import { localToday, useOnce } from '../lib/people'
 import AttendanceCalendar, { type Att } from '../components/AttendanceCalendar'
 import { Btn, Card, ErrorMsg, Loading, PageTitle, Select } from '../components/ui'
 
@@ -13,12 +14,13 @@ export default function Attendance() {
   const [status, setStatus] = useState('present')
   const [msg, setMsg] = useState('')
   const [err, setErr] = useState('')
-  async function mark() {
+  const once = useOnce()
+  const mark = () => once(async () => {
     setErr(''); setMsg('')
-    const { error } = await supabase.from('attendance').insert({ status })
+    const { error } = await supabase.from('attendance').insert({ status, day: localToday() })
     if (error) setErr(error.code === '23505' ? 'You already marked attendance today.' : error.message)
     else { setMsg('Attendance saved.'); reload() }
-  }
+  })
   return (
     <div>
       <PageTitle>Attendance</PageTitle>

@@ -15,5 +15,6 @@ input:focus, textarea:focus, select:focus { outline: 2px solid #d6249f55; outlin
 *, ::after, ::before { border-color: #e5e5e5; }
 .overflow-x-auto { scrollbar-width: none; }
 .overflow-x-auto::-webkit-scrollbar { display: none; }
+p, h1, h2, h3, span, a, button, label { overflow-wrap: anywhere; }
 h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; }
 }

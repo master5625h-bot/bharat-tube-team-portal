@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { supabase, type Team } from '../lib/supabase'
 import { useChat, type Msg } from '../lib/chat'
-import { usePeople } from '../lib/people'
+import { usePeople, useOnce } from '../lib/people'
 import { useTable } from '../lib/useTable'
 import { Avatar } from '../components/Avatar'
 import { Card, ErrorMsg, PageTitle } from '../components/ui'
@@ -105,8 +105,8 @@ export function ChatRoom() {
   useEffect(() => { if (lastAt) markRead(channel) // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, lastAt])
 
-  async function send(e: FormEvent) {
-    e.preventDefault()
+  const once = useOnce()
+  const send = (e: FormEvent) => { e.preventDefault(); return once(async () => {
     const body = text.trim(); if (!body) return
     setBusy(true); setErr('')
     const row: Record<string, string> = channel === 'common' ? { kind: 'common', body }
@@ -115,7 +115,7 @@ export function ChatRoom() {
     const { error } = await supabase.from('messages').insert(row)
     if (error) setErr(error.message); else { setText(''); await reload() }
     setBusy(false)
-  }
+  }) }
 
   let prevDay = ''
   return (

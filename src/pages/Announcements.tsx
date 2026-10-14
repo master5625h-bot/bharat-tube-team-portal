@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
+import { useOnce } from '../lib/people'
 import { Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Textarea } from '../components/ui'
 
 type Ann = { id: string; title: string; body: string; created_at: string }
@@ -11,11 +12,12 @@ export default function Announcements() {
   const { rows, loading, error, reload } = useTable<Ann>('announcements')
   const [f, setF] = useState({ title: '', body: '' })
   const [err, setErr] = useState('')
-  async function add(e: FormEvent) {
-    e.preventDefault()
+  const once = useOnce()
+  const add = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr('')
     const { error } = await supabase.from('announcements').insert(f)
     if (error) setErr(error.message); else { setF({ title: '', body: '' }); reload() }
-  }
+  }) }
   async function del(id: string) { await supabase.from('announcements').delete().eq('id', id); reload() }
   return (
     <div>

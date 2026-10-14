@@ -3,6 +3,7 @@ import { useAuth } from '../lib/auth'
 import { supabase, type Profile, type Team } from '../lib/supabase'
 import { presetsFor } from '../lib/taskPresets'
 import { useTable } from '../lib/useTable'
+import { useOnce } from '../lib/people'
 import Comments, { type Comment } from '../components/Comments'
 import { Badge, Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Select, Textarea } from '../components/ui'
 
@@ -21,12 +22,13 @@ export default function Tasks() {
   const [filter, setFilter] = useState('all')
   const [err, setErr] = useState('')
 
-  async function add(e: FormEvent) {
-    e.preventDefault(); setErr('')
+  const once = useOnce()
+  const add = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr('')
     if (!f.title.trim()) { setErr('Please choose a task type or write a custom title.'); return }
     const { error } = await supabase.from('tasks').insert({ ...f, due_date: f.due_date || null, assigned_to: f.assigned_to || null })
     if (error) setErr(error.message); else { setF({ title: '', description: '', priority: 'medium', due_date: '', assigned_to: '' }); setPreset(''); reload() }
-  }
+  }) }
   async function setStatus(id: string, status: string) {
     const { error } = await supabase.from('tasks').update({ status }).eq('id', id)
     if (error) setErr(error.message); else reload()

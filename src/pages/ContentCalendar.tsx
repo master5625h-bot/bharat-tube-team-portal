@@ -2,7 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
-import { usePeople } from '../lib/people'
+import { usePeople, useOnce } from '../lib/people'
 import { Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Select } from '../components/ui'
 
 type Item = { id: string; title: string; publish_date: string; platform: string; note: string; assigned_to: string | null; created_by: string }
@@ -28,14 +28,15 @@ export default function ContentCalendar() {
   const key = (d: number) => iso(new Date(month.getFullYear(), month.getMonth(), d))
   const today = iso(new Date())
 
-  async function add(e: FormEvent) {
-    e.preventDefault(); setErr('')
+  const once = useOnce()
+  const add = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr('')
     const { error } = await supabase.from('content_items').insert({
       title: f.title, platform: f.platform, note: f.note, publish_date: sel,
       assigned_to: isAdmin ? (f.assigned_to || null) : profile!.id,
     })
     if (error) setErr(error.message); else { setF({ title: '', platform: 'YouTube', note: '', assigned_to: '' }); reload() }
-  }
+  }) }
   async function del(id: string) { await supabase.from('content_items').delete().eq('id', id); reload() }
 
   return (

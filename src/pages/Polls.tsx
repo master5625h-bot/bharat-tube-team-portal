@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
+import { useOnce } from '../lib/people'
 import { Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle } from '../components/ui'
 
 type Poll = { id: string; question: string; closed: boolean; created_at: string }
@@ -26,16 +27,17 @@ export default function Polls() {
   useEffect(() => { loadRes() }, [loadRes])
   const refresh = () => { polls.reload(); opts.reload(); mine.reload(); loadRes() }
 
-  async function create(e: FormEvent) {
-    e.preventDefault(); setErr('')
+  const once = useOnce()
+  const create = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr('')
     const { error } = await supabase.rpc('create_poll', { q, opts: o.map(x => x.trim()).filter(Boolean) })
     if (error) setErr(error.message); else { setQ(''); setO(['', '']); refresh() }
-  }
-  async function vote(poll_id: string, option_id: string) {
+  }) }
+  const vote = (poll_id: string, option_id: string) => once(async () => {
     setErr('')
     const { error } = await supabase.from('poll_votes').insert({ poll_id, option_id })
     if (error) setErr(error.code === '23505' ? 'Aap is poll me vote kar chuke ho.' : error.message); refresh()
-  }
+  })
   async function setClosed(id: string, closed: boolean) { await supabase.from('polls').update({ closed }).eq('id', id); refresh() }
   async function del(id: string) { await supabase.from('polls').delete().eq('id', id); refresh() }
 

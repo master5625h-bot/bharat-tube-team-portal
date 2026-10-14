@@ -1,5 +1,6 @@
 import { useAuth } from '../lib/auth'
 import { useTable } from '../lib/useTable'
+import { localToday } from '../lib/people'
 import { Badge, Card, Empty, ErrorMsg, Loading, PageTitle, Stat } from '../components/ui'
 
 type Task = { id: string; title: string; status: string; due_date: string | null }
@@ -15,7 +16,7 @@ export default function Dashboard() {
   const ann = useTable<Ann>('announcements')
   const reps = useTable<Rep>('weekly_reports')
   const team = useTable<Prof>('profiles')
-  const today = new Date().toISOString().slice(0, 10)
+  const today = localToday()
   if (tasks.loading || att.loading || ann.loading || team.loading || reps.loading) return <Loading />
   const err = tasks.error || att.error || ann.error || reps.error || team.error
   const pending = tasks.rows.filter(t => t.status !== 'done')

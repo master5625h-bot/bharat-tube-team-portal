@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase, type Profile } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
+import { useOnce } from '../lib/people'
 import { Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Textarea } from '../components/ui'
 
 type Rep = { id: string; user_id: string; week_start: string; summary: string; blockers: string; next_plan: string }
@@ -37,8 +38,9 @@ export default function Reports() {
     setPicked(arr)
   }
 
-  async function submit(e: FormEvent) {
-    e.preventDefault(); setErr(''); setOk(''); setBusy(true)
+  const once = useOnce()
+  const submit = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr(''); setOk(''); setBusy(true)
     const { data, error } = await supabase.from('weekly_reports').insert(f).select('id').single()
     if (error || !data) { setErr(error?.code === '23505' ? 'You already sent a report for that week.' : error?.message ?? 'Failed'); setBusy(false); return }
     const failed: string[] = []
@@ -53,11 +55,14 @@ export default function Reports() {
     if (failed.length) setErr(`Report saved, but these files failed: ${failed.join(', ')}`)
     else setOk('Report submitted.')
     setF({ ...f, summary: '', blockers: '', next_plan: '' }); setPicked([]); reload(); files.reload()
-  }
+  }) }
 
   async function open(path: string) {
+    const win = window.open('', '_blank')
     const { data, error } = await supabase.storage.from('reports').createSignedUrl(path, 300)
-    if (error || !data) setErr(error?.message ?? 'Could not open file'); else window.open(data.signedUrl, '_blank', 'noopener')
+    if (error || !data) { win?.close(); setErr(error?.message ?? 'Could not open file') }
+    else if (win) win.location.href = data.signedUrl
+    else window.location.href = data.signedUrl
   }
 
   const who = (id: string) => team.rows.find(p => p.id === id)?.full_name || team.rows.find(p => p.id === id)?.email || ''

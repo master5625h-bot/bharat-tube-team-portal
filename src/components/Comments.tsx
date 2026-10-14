@@ -3,6 +3,7 @@ import { useAuth } from '../lib/auth'
 import { supabase, type Profile } from '../lib/supabase'
 import { Avatar } from './Avatar'
 import { Btn, Textarea } from './ui'
+import { useOnce } from '../lib/people'
 
 export type Comment = { id: string; task_id: string; user_id: string; body: string; created_at: string }
 
@@ -17,12 +18,13 @@ export default function Comments({ taskId, comments, people, onChange }: {
   const mine = comments.filter(c => c.task_id === taskId).sort((a, b) => a.created_at.localeCompare(b.created_at))
   const who = (id: string) => people.find(p => p.id === id)
 
-  async function send(e: FormEvent) {
-    e.preventDefault(); setErr(''); setBusy(true)
+  const once = useOnce()
+  const send = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr(''); setBusy(true)
     const { error } = await supabase.from('task_comments').insert({ task_id: taskId, body: text.trim() })
     setBusy(false)
     if (error) setErr(error.message); else { setText(''); onChange() }
-  }
+  }) }
   async function del(id: string) { await supabase.from('task_comments').delete().eq('id', id); onChange() }
 
   return (

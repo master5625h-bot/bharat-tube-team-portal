@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
-import { usePeople, istToday } from '../lib/people'
+import { usePeople, istToday, useOnce } from '../lib/people'
 import { Avatar } from '../components/Avatar'
 import { Btn, Card, Empty, ErrorMsg, Loading, PageTitle, Textarea } from '../components/ui'
 
@@ -18,13 +18,14 @@ export default function Checkins() {
   const [edit, setEdit] = useState(false)
   const [err, setErr] = useState('')
 
-  async function save(e: FormEvent) {
-    e.preventDefault(); setErr('')
+  const once = useOnce()
+  const save = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr('')
     const { error } = todays
       ? await supabase.from('checkins').update({ note }).eq('id', todays.id)
       : await supabase.from('checkins').insert({ note })
     if (error) setErr(error.message); else { setNote(''); setEdit(false); reload() }
-  }
+  }) }
   async function del(id: string) { await supabase.from('checkins').delete().eq('id', id); reload() }
 
   return (

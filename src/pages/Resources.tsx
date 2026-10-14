@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
 import { useTable } from '../lib/useTable'
+import { useOnce } from '../lib/people'
 import { Btn, Card, Empty, ErrorMsg, Field, Input, Loading, PageTitle, Select } from '../components/ui'
 
 type R = { id: string; title: string; kind: 'link' | 'file'; url: string | null; file_path: string | null; filename: string | null; mime: string | null; created_at: string }
@@ -19,8 +20,9 @@ export default function Resources() {
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
 
-  async function add(e: FormEvent) {
-    e.preventDefault(); setErr(''); setBusy(true)
+  const once = useOnce()
+  const add = (e: FormEvent) => { e.preventDefault(); return once(async () => {
+    setErr(''); setBusy(true)
     try {
       if (kind === 'link') {
         if (!/^https?:\/\//i.test(url)) throw new Error('Link http:// ya https:// se shuru hona chahiye.')
@@ -39,7 +41,7 @@ export default function Resources() {
       setTitle(''); setUrl(''); setFile(null); reload()
     } catch (x) { setErr((x as Error).message) }
     setBusy(false)
-  }
+  }) }
   async function open(r: R) {
     const win = window.open('', '_blank')
     const { data, error } = await supabase.storage.from('resources').createSignedUrl(r.file_path!, 300)

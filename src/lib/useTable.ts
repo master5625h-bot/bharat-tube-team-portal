@@ -7,7 +7,6 @@ export function useTable<T>(table: string, select = '*', order = 'created_at', a
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const reload = useCallback(async () => {
-    setLoading(true)
     const { data, error } = await supabase.from(table).select(select).order(order, { ascending })
     if (error) setError(error.message); else { setError(''); setRows((data ?? []) as T[]) }
     setLoading(false)
