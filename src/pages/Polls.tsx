@@ -56,7 +56,7 @@ export default function Polls() {
           const my = mine.rows.find(v => v.poll_id === p.id)
           const os = opts.rows.filter(x => x.poll_id === p.id)
           const total = res.filter(r => r.poll_id === p.id).reduce((s, r) => s + r.votes, 0)
-          const showResults = Boolean(my) || p.closed
+          const showResults = Boolean(my) || p.closed || isAdmin
           return (
             <Card key={p.id}>
               <p className="text-lg font-semibold">{p.question} {p.closed && <span className="ml-1 rounded-full bg-neutral-200 px-2 py-0.5 text-sm font-normal">Closed</span>}</p>
