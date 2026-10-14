@@ -24,9 +24,9 @@ export default function Layout() {
           <p className="font-bold text-white">Bharat<span className="text-brand">Tube</span></p>
           <button onClick={() => supabase.auth.signOut()} className="min-h-11 px-3 text-white">Log out</button>
         </header>
-        <nav className="flex overflow-x-auto border-t border-neutral-800 bg-black px-1 pb-2">
+        <nav className="flex overflow-x-auto border-t border-neutral-800 bg-black px-0.5 pb-2">
           {links.map(([to, l]) => (
-            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-lg px-2 py-2.5 text-center text-sm font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200'}`}>{l}</NavLink>
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-lg px-1 py-2.5 text-center text-sm font-medium ${isActive ? 'bg-brand text-white' : 'text-neutral-200'}`}>{l}</NavLink>
           ))}
         </nav>
       </div>
