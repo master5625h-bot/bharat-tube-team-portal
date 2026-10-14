@@ -8,5 +8,7 @@ export const supabase = createClient(url ?? 'http://localhost', key ?? 'missing'
 
 export type Profile = {
   id: string; full_name: string; email: string
-  role: 'admin' | 'member'; approved: boolean; avatar_url: string | null
+  role: 'admin' | 'member'; approved: boolean; avatar_url: string | null; team_id: string | null
 }
+
+export type Team = { id: string; name: string }
