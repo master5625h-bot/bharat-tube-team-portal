@@ -11,3 +11,7 @@ body { @apply bg-white text-neutral-900 text-base antialiased; letter-spacing: -
 button, a { transition: transform .12s ease, background-color .15s ease, opacity .15s ease, box-shadow .15s ease; }
 button:active:not(:disabled) { transform: scale(0.97); }
 input:focus, textarea:focus, select:focus { outline: 2px solid #d6249f55; outline-offset: 1px; border-color: #d62976; }
+*, ::after, ::before { border-color: #e5e5e5; }
+.overflow-x-auto { scrollbar-width: none; }
+.overflow-x-auto::-webkit-scrollbar { display: none; }
+h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; }
