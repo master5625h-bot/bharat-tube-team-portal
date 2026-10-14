@@ -13,7 +13,7 @@ export default function Polls() {
   const { profile } = useAuth()
   const isAdmin = profile?.role === 'admin'
   const polls = useTable<Poll>('polls')
-  const opts = useTable<Opt>('poll_options', '*', 'position')
+  const opts = useTable<Opt>('poll_options', '*', 'position', true)
   const mine = useTable<MyVote>('poll_votes', '*', 'created_at')
   const [res, setRes] = useState<Res[]>([])
   const [q, setQ] = useState('')
