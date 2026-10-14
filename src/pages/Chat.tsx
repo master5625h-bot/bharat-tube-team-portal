@@ -145,7 +145,7 @@ export function ChatRoom() {
         <div ref={end} />
       </div>
       {err && <div className="px-3"><ErrorMsg msg={err} /></div>}
-      <form onSubmit={send} className="flex items-end gap-2 border-t bg-white p-3">
+      <form onSubmit={send} className="flex items-end gap-2 border-t bg-white p-3 pb-16 md:pb-3">
         <textarea aria-label="Message" rows={1} maxLength={2000} value={text} onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth >= 768) { e.preventDefault(); e.currentTarget.form?.requestSubmit() } }}
           placeholder="Message..." className="max-h-32 min-h-12 flex-1 resize-none rounded-3xl border border-neutral-200 bg-neutral-50 px-4 py-3" />
