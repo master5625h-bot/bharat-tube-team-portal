@@ -127,3 +127,18 @@ create policy "attendance admin update" on public.attendance for update using (p
 create policy "ann read" on public.announcements for select using (public.is_approved());
 create policy "ann admin insert" on public.announcements for insert with check (public.is_admin());
 create policy "ann admin delete" on public.announcements for delete using (public.is_admin());
+
+-- Members may only change the status of their assigned task (not title, assignee, etc.)
+create or replace function public.protect_task() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() and (
+    new.title <> old.title or new.description <> old.description or new.priority <> old.priority
+    or new.due_date is distinct from old.due_date or new.assigned_to is distinct from old.assigned_to
+    or new.created_by <> old.created_by) then
+    raise exception 'Members can only change task status';
+  end if;
+  return new;
+end; $$;
+create trigger protect_task_trg before update on public.tasks
+  for each row execute function public.protect_task();
