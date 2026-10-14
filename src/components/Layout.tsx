@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
+import { useChat } from '../lib/chat'
 
-const main = [['/', 'Home'], ['/tasks', 'Tasks'], ['/ideas', 'Ideas'], ['/team', 'Team']]
+const main = [['/', 'Home'], ['/tasks', 'Tasks'], ['/chat', 'Chat'], ['/team', 'Team']]
 const more = [
-  ['/attendance', 'Attendance'], ['/reports', 'Reports'], ['/announcements', 'News'], ['/calendar', 'Content calendar'],
+  ['/ideas', 'Ideas'], ['/attendance', 'Attendance'], ['/reports', 'Reports'], ['/announcements', 'News'], ['/calendar', 'Content calendar'],
   ['/polls', 'Polls'], ['/checkin', 'Daily check-in'], ['/resources', 'Resources'], ['/activity', 'Activity'],
 ]
 const links = [...main, ...more]
@@ -15,6 +16,8 @@ const cls = ({ isActive }: { isActive: boolean }) =>
 export default function Layout() {
   const { profile, session } = useAuth()
   const loc = useLocation()
+  const { totalUnread } = useChat()
+  const dot = (to: string) => to === '/chat' && totalUnread > 0 ? <span aria-label={`${totalUnread} unread`} className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-pink-500 align-middle" /> : null
   const [open, setOpen] = useState(false)
   useEffect(() => setOpen(false), [loc.pathname])
   const moreActive = more.some(([to]) => loc.pathname.startsWith(to))
@@ -22,7 +25,7 @@ export default function Layout() {
     <div className="min-h-screen md:flex">
       <aside className="hidden w-60 shrink-0 flex-col bg-black p-4 md:flex">
         <p className="mb-6 text-xl font-bold text-white">Bharat<span className="text-brand">Tube</span> <span className="block text-sm font-normal text-neutral-400">Team Portal</span></p>
-        <nav className="flex-1 space-y-1">{links.map(([to, l]) => <NavLink key={to} to={to} end={to === '/'} className={cls}>{l}</NavLink>)}</nav>
+        <nav className="flex-1 space-y-1">{links.map(([to, l]) => <NavLink key={to} to={to} end={to === '/'} className={cls}>{l}{dot(to)}</NavLink>)}</nav>
         <p className="mb-2 break-all text-sm text-neutral-400">{session?.user.email} ({profile?.role})</p>
         <button onClick={() => supabase.auth.signOut()} className="min-h-11 rounded-full border border-neutral-600 text-white">Log out</button>
       </aside>
@@ -33,7 +36,7 @@ export default function Layout() {
         </header>
         <nav className="flex gap-1 border-t border-neutral-800 bg-black px-2 pb-2 pt-1">
           {main.map(([to, l]) => (
-            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-full px-1 py-2.5 text-center text-sm font-medium ${isActive ? 'ig-bg text-white' : 'text-neutral-200'}`}>{l}</NavLink>
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `min-h-11 flex-1 whitespace-nowrap rounded-full px-1 py-2.5 text-center text-sm font-medium ${isActive ? 'ig-bg text-white' : 'text-neutral-200'}`}>{l}{dot(to)}</NavLink>
           ))}
           <button aria-expanded={open} onClick={() => setOpen(!open)} className={`min-h-11 flex-1 rounded-full px-1 py-2.5 text-center text-sm font-medium ${moreActive || open ? 'ig-bg text-white' : 'text-neutral-200'}`}>More ▾</button>
         </nav>

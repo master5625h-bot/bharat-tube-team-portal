@@ -11,6 +11,8 @@ import Attendance from './pages/Attendance'
 import Reports from './pages/Reports'
 import Announcements from './pages/Announcements'
 import Team from './pages/Team'
+import { ChatList, ChatRoom } from './pages/Chat'
+import { ChatProvider } from './lib/chat'
 import Ideas from './pages/Ideas'
 import ContentCalendar from './pages/ContentCalendar'
 import Polls from './pages/Polls'
@@ -30,7 +32,7 @@ function Gate() {
     </Card></div>
   )
   return (
-    <Routes>
+    <ChatProvider><Routes>
       <Route element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="tasks" element={<Tasks />} />
@@ -44,9 +46,11 @@ function Gate() {
         <Route path="checkin" element={<Checkins />} />
         <Route path="resources" element={<Resources />} />
         <Route path="activity" element={<Activity />} />
+        <Route path="chat" element={<ChatList />} />
+        <Route path="chat/:key" element={<ChatRoom />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Route>
-    </Routes>
+    </Routes></ChatProvider>
   )
 }
 
