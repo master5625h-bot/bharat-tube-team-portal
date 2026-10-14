@@ -45,7 +45,7 @@ export default function Layout() {
             <NavLink key={to} to={to} className={({ isActive }) => `min-h-11 rounded-2xl px-3 py-3 text-sm font-semibold ${isActive ? 'ig-bg text-white' : 'bg-neutral-900 text-neutral-100'}`}>{l}</NavLink>
           ))}</div>}
       </div>
-      <main onClick={() => open && setOpen(false)} className="mx-auto w-full max-w-3xl flex-1 p-4 pb-16 md:p-8"><Outlet /></main>
+      <main onClick={() => open && setOpen(false)} className="mx-auto w-full max-w-3xl flex-1 p-4 pb-10 md:p-8"><Outlet /></main>
     </div>
   )
 }

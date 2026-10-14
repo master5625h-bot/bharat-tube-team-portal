@@ -29,12 +29,14 @@ export default function Reports() {
   const [ok, setOk] = useState('')
   const [busy, setBusy] = useState(false)
 
+  const [inputKey, setInputKey] = useState(0)
   function pick(list: FileList | null) {
     setErr('')
     const arr = Array.from(list ?? [])
+    const reject = (m: string) => { setErr(m); setPicked([]); setInputKey(k => k + 1) }
     const bad = arr.find(x => !OK.includes(x.type) || x.size > MAX)
-    if (bad) { setErr(`"${bad.name}" is not allowed. Only PNG or PDF, up to 5 MB each.`); return }
-    if (arr.length > 5) { setErr('You can attach up to 5 files.'); return }
+    if (bad) { reject(`"${bad.name}" is not allowed. Only PNG or PDF, up to 5 MB each.`); return }
+    if (arr.length > 5) { reject('You can attach up to 5 files.'); return }
     setPicked(arr)
   }
 
@@ -54,7 +56,7 @@ export default function Reports() {
     setBusy(false)
     if (failed.length) setErr(`Report saved, but these files failed: ${failed.join(', ')}`)
     else setOk('Report submitted.')
-    setF({ ...f, summary: '', blockers: '', next_plan: '' }); setPicked([]); reload(); files.reload()
+    setF({ ...f, summary: '', blockers: '', next_plan: '' }); setPicked([]); setInputKey(k => k + 1); reload(); files.reload()
   }) }
 
   async function open(path: string) {
@@ -75,7 +77,7 @@ export default function Reports() {
         <Field label="Problems"><Textarea value={f.blockers} onChange={e => setF({ ...f, blockers: e.target.value })} /></Field>
         <Field label="Plan for next week"><Textarea value={f.next_plan} onChange={e => setF({ ...f, next_plan: e.target.value })} /></Field>
         <Field label="Attach files (PNG or PDF, up to 5 files, 5 MB each)">
-          <input type="file" multiple accept="image/png,application/pdf" onChange={e => pick(e.target.files)}
+          <input key={inputKey} type="file" multiple accept="image/png,application/pdf" onChange={e => pick(e.target.files)}
             className="block min-h-11 w-full rounded-xl border border-neutral-200 bg-white p-2" />
         </Field>
         {picked.length > 0 && <ul className="text-sm text-neutral-700">{picked.map(p => <li key={p.name}>{p.name} ({kb(p.size)})</li>)}</ul>}

@@ -88,7 +88,7 @@ export function ChatRoom() {
   const { key = 'common' } = useParams()
   const { profile } = useAuth()
   const { msgs, channelOf, markRead, reload } = useChat()
-  const { people, name } = usePeople()
+  const { people, name, loading: pLoading } = usePeople()
   const teams = useTable<Team>('teams', '*', 'name', true)
   const me = profile?.id ?? ''
   const channel = key === 'common' ? 'common' : key.startsWith('team-') ? `team:${key.slice(5)}` : `dm:${key.slice(3)}`
@@ -118,6 +118,14 @@ export function ChatRoom() {
   }) }
 
   let prevDay = ''
+  const isAdmin = profile?.role === 'admin'
+  const known = channel === 'common'
+    || (channel.startsWith('team:') && teams.rows.some(t => t.id === channel.slice(5) && (isAdmin || t.id === profile?.team_id)))
+    || (channel.startsWith('dm:') && people.some(p => p.id === channel.slice(3) && p.approved && p.id !== me))
+  if (!pLoading && !teams.loading && !known) return (
+    <div><PageTitle>Chat</PageTitle><Card><p className="mb-3">Ye chat nahi mili ya aap yahan nahi hain.</p>
+      <Link to="/chat" className="inline-block min-h-11 font-semibold text-brand underline">Back to chats</Link></Card></div>
+  )
   return (
     <div className="-mx-4 -mt-4 flex h-[calc(100dvh-7.5rem)] flex-col md:mx-0 md:mt-0 md:h-[calc(100dvh-4rem)]">
       <div className="flex items-center gap-3 border-b bg-white px-3 py-2">
@@ -145,7 +153,7 @@ export function ChatRoom() {
         <div ref={end} />
       </div>
       {err && <div className="px-3"><ErrorMsg msg={err} /></div>}
-      <form onSubmit={send} className="flex items-end gap-2 border-t bg-white p-3 pb-16 md:pb-3">
+      <form onSubmit={send} className="flex items-end gap-2 border-t bg-white p-3">
         <textarea aria-label="Message" rows={1} maxLength={2000} value={text} onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth >= 768) { e.preventDefault(); e.currentTarget.form?.requestSubmit() } }}
           placeholder="Message..." className="max-h-32 min-h-12 flex-1 resize-none rounded-3xl border border-neutral-200 bg-neutral-50 px-4 py-3" />
