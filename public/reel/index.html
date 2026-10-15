@@ -101,7 +101,7 @@ const STYLES = [
 const $ = id => document.getElementById(id);
 const cv = $("cv"), ctx = cv.getContext("2d");
 let style = STYLES[0];
-let particles = [], raf = null, t0 = 0, timeline = [], totalDur = 0, W = 720, H = 1280;
+let particles = [], raf = null, timer = null, t0 = 0, timeline = [], totalDur = 0, W = 720, H = 1280;
 
 /* ---------- style picker ---------- */
 const stylesEl = $("styles");
@@ -241,20 +241,24 @@ function drawFrame(now){
   }
   return t;
 }
-function loop(now){
-  const t = drawFrame(now);
+function loop(){
+  const t = drawFrame(performance.now());
   $("progbar").style.width = Math.min(100, t/totalDur*100) + "%";
-  if(t < totalDur + 0.1){ raf = requestAnimationFrame(loop); }
-  else stopAnim(true);
+  if(t >= totalDur + 0.1) stopAnim(true);
 }
 function stopAnim(done){
-  if(raf) cancelAnimationFrame(raf); raf = null;
+  if(timer){ clearInterval(timer); timer = null; }
+  if(raf){ cancelAnimationFrame(raf); raf = null; }
   if(done && activeRec) finishRec();
 }
 function startAnim(){
-  if(raf) cancelAnimationFrame(raf);
+  stopAnim(false);
   makeParticles(); t0 = performance.now();
-  raf = requestAnimationFrame(loop);
+  // timer drives the animation so it stays smooth even where rAF is throttled;
+  // rAF added as a second driver for buttery frames where available
+  timer = setInterval(loop, 33);
+  const rafStep = () => { if(!timer) return; loop(); raf = requestAnimationFrame(rafStep); };
+  raf = requestAnimationFrame(rafStep);
 }
 async function prep(){
   const lines = parseLines();
