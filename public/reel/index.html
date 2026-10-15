@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Reel Studio - hello___editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;700;900&family=Poppins:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --accent:#e8b64c; --bg:#0a0a0c; --card:#16161c; --border:#2a2a33; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:#eee; font-family:Poppins,'Noto Sans Devanagari',sans-serif; min-height:100vh; }
+  .wrap { max-width:520px; margin:0 auto; padding:16px 14px 60px; }
+  h1 { font-size:22px; font-weight:900; letter-spacing:.5px; }
+  h1 span { color:var(--accent); }
+  .sub { color:#9a9aa5; font-size:12.5px; margin:4px 0 18px; }
+  label { display:block; font-size:13px; font-weight:700; margin:16px 0 6px; color:#cfcfd8; }
+  .hint { font-weight:400; color:#8a8a95; font-size:11.5px; }
+  textarea, input[type=text], select { width:100%; background:var(--card); border:1px solid var(--border); border-radius:12px; color:#fff; padding:12px; font-size:15px; font-family:inherit; outline:none; }
+  textarea { min-height:130px; resize:vertical; line-height:1.7; }
+  textarea:focus, input:focus, select:focus { border-color:var(--accent); }
+  .styles { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .style-opt { border:2px solid var(--border); border-radius:14px; padding:10px; cursor:pointer; text-align:center; font-size:13px; font-weight:700; }
+  .style-opt .sw { height:56px; border-radius:9px; margin-bottom:7px; display:flex; align-items:center; justify-content:center; font-size:15px; overflow:hidden; }
+  .style-opt.on { border-color:var(--accent); }
+  .row { display:flex; gap:10px; }
+  .row > div { flex:1; }
+  input[type=range] { width:100%; accent-color:var(--accent); margin-top:10px; }
+  .filebtn { display:block; background:var(--card); border:1px dashed var(--border); border-radius:12px; padding:12px; text-align:center; color:#9a9aa5; font-size:13px; cursor:pointer; }
+  .btn { width:100%; border:none; border-radius:14px; padding:15px; font-size:16px; font-weight:900; font-family:inherit; cursor:pointer; margin-top:18px; }
+  .btn-go { background:linear-gradient(135deg,#ffd77a,#e8a63c); color:#1a1206; }
+  .btn-prev { background:var(--card); color:#fff; border:1px solid var(--border); }
+  .btn:disabled { opacity:.45; }
+  #stage { margin-top:18px; display:none; }
+  #cv { width:100%; border-radius:16px; background:#000; display:block; }
+  #prog { height:6px; background:var(--border); border-radius:3px; margin-top:10px; overflow:hidden; }
+  #progbar { height:100%; width:0%; background:linear-gradient(90deg,#ffd77a,#e8a63c); transition:width .2s linear; }
+  #status { text-align:center; font-size:12.5px; color:#9a9aa5; margin-top:8px; min-height:18px; }
+  #out { margin-top:18px; display:none; }
+  #out video { width:100%; border-radius:16px; background:#000; }
+  .btn-dl { background:#1f6feb; color:#fff; }
+  .btn-share { background:#22c55e; color:#04170a; }
+  .note { background:#151510; border:1px solid #3a3220; border-radius:12px; padding:11px 13px; font-size:12px; color:#c9b98a; margin-top:14px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Reel <span>Studio</span></h1>
+  <div class="sub">Lyrics likho, style chuno, reel download karo - 9:16 video, bina kisi app ke</div>
+
+  <label>Lyrics / Text <span class="hint">- har line ek beat hai. Line ke aage * lagao to wo gold highlight hogi</span></label>
+  <textarea id="lines" placeholder="बुरे वक्त में&#10;जो मेरे साथ&#10;*खड़े हैं,"></textarea>
+
+  <label>Style</label>
+  <div class="styles" id="styles"></div>
+
+  <div class="row">
+    <div>
+      <label>Speed <span class="hint" id="spdLbl">Normal</span></label>
+      <input type="range" id="speed" min="0.6" max="1.6" step="0.1" value="1">
+    </div>
+    <div>
+      <label>Quality</label>
+      <select id="quality"><option value="720">HD (720x1280)</option><option value="1080">Full HD (1080x1920)</option></select>
+    </div>
+  </div>
+
+  <label>Music <span class="hint">- optional, apni audio file (mp3/m4a)</span></label>
+  <label class="filebtn" id="musicBtn">🎵 Audio file chuno (optional)<input type="file" id="music" accept="audio/*" hidden></label>
+
+  <label>Ending text <span class="hint">- aakhri 2.5 sec pe dikhega</span></label>
+  <input type="text" id="brand" value="hello___editor">
+
+  <button class="btn btn-prev" id="prevBtn">▶ Preview dekho</button>
+  <button class="btn btn-go" id="goBtn">🎬 Video banao</button>
+
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="prog"><div id="progbar"></div></div>
+    <div id="status"></div>
+  </div>
+
+  <div id="out">
+    <video id="outv" controls playsinline loop></video>
+    <a class="btn btn-dl" id="dlBtn" download>⬇ Download karo</a>
+    <button class="btn btn-share" id="shareBtn">📤 Share karo (WhatsApp / Instagram)</button>
+  </div>
+
+  <div class="note">💡 Video banate waqt screen pe hi recording hoti hai - tab tak phone ko chhedo mat. MP4 milega jahan browser support karta hai, warna WebM (WhatsApp pe dono chalte hain).</div>
+</div>
+
+<script>
+"use strict";
+const STYLES = [
+  { id:"gold",  name:"Gold Cinematic", bg:"#070608", glow:"255,200,90",  hi:["#ffe28c","#d99a2b"], fg:["#ffffff","#c8cdd7"], dust:"255,205,110", swBg:"linear-gradient(160deg,#0a0a0c,#221a08)", swColor:"#ffd77a" },
+  { id:"neon",  name:"Blue Neon",      bg:"#04060f", glow:"90,160,255",  hi:["#9fd0ff","#2f7bff"], fg:["#eaf2ff","#a8b8d8"], dust:"120,180,255", swBg:"linear-gradient(160deg,#04060f,#0a1838)", swColor:"#9fd0ff" },
+  { id:"pink",  name:"Pink Love",      bg:"#0e040a", glow:"255,110,170", hi:["#ffc0da","#ff5c9e"], fg:["#fff0f6","#d8a8bc"], dust:"255,150,190", swBg:"linear-gradient(160deg,#0e040a,#3a0a24)", swColor:"#ffc0da" },
+  { id:"mono",  name:"Simple White",   bg:"#000000", glow:"255,255,255", hi:["#ffffff","#ffffff"], fg:["#ffffff","#dddddd"], dust:null,         swBg:"#000", swColor:"#fff" },
+];
+const $ = id => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d");
+let style = STYLES[0];
+let particles = [], raf = null, t0 = 0, timeline = [], totalDur = 0, W = 720, H = 1280;
+
+/* ---------- style picker ---------- */
+const stylesEl = $("styles");
+STYLES.forEach((s,i)=>{
+  const d = document.createElement("div");
+  d.className = "style-opt" + (i===0 ? " on" : "");
+  d.innerHTML = `<div class="sw" style="background:${s.swBg};color:${s.swColor}">आपका text</div>${s.name}`;
+  d.onclick = ()=>{ style = s; document.querySelectorAll(".style-opt").forEach(x=>x.classList.remove("on")); d.classList.add("on"); };
+  stylesEl.appendChild(d);
+});
+$("speed").oninput = e => { const v=+e.target.value; $("spdLbl").textContent = v<0.9?"Fast":v>1.15?"Slow":"Normal"; };
+let musicFile = null;
+$("music").onchange = e => { musicFile = e.target.files[0]||null; $("musicBtn").firstChild.textContent = musicFile ? "🎵 " + musicFile.name : "🎵 Audio file chuno (optional)"; };
+
+/* ---------- text + timeline ---------- */
+function parseLines(){
+  const raw = $("lines").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,24);
+  if(!raw.length) return null;
+  return raw.map(l => {
+    const hi = l.startsWith("*") || l.startsWith("⭐");
+    const text = l.replace(/^[*⭐]\s*/,"");
+    return { words: text.split(/\s+/).filter(Boolean), hi };
+  });
+}
+function buildTimeline(lines){
+  const spd = +$("speed").value;
+  let t = 0; timeline = [];
+  for(const ln of lines){
+    const dur = Math.max(1.7, 0.42 * ln.words.length + 0.9) * spd;
+    timeline.push({ ...ln, start:t, dur });
+    t += dur + 0.25;
+  }
+  totalDur = t + 2.8; // outro
+}
+const easeOut = p => 1 - Math.pow(1-p, 3);
+const clamp01 = v => Math.max(0, Math.min(1, v));
+function fontStr(px, wt){ return `${wt||700} ${px}px 'Noto Sans Devanagari', Poppins, sans-serif`; }
+
+/* ---------- particles ---------- */
+function makeParticles(){
+  particles = [];
+  if(!style.dust) return;
+  for(let i=0;i<70;i++) particles.push({ x:Math.random()*W, y:Math.random()*H, r:0.8+Math.random()*2.4, vy:-(4+Math.random()*14)/30, vx:(Math.random()-.5)*8/30, ph:Math.random()*6.28 });
+}
+
+/* ---------- drawing ---------- */
+function grad(colors, x, y, w){
+  const g = ctx.createLinearGradient(x, y, x, y + 90);
+  g.addColorStop(0, colors[0]); g.addColorStop(1, colors[1]||colors[0]);
+  return g;
+}
+function drawFrame(now){
+  const t = (now - t0) / 1000;
+  ctx.fillStyle = style.bg; ctx.fillRect(0,0,W,H);
+  // vignette glow
+  const vg = ctx.createRadialGradient(W/2, H*0.42, 40, W/2, H*0.42, H*0.55);
+  vg.addColorStop(0, `rgba(${style.glow},0.10)`); vg.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
+  // dust
+  if(style.dust){
+    for(const p of particles){
+      p.y += p.vy; p.x += p.vx + Math.sin(t*0.8 + p.ph)*0.25;
+      if(p.y < -6){ p.y = H+6; p.x = Math.random()*W; }
+      const a = 0.14 + 0.16*Math.abs(Math.sin(t*1.3 + p.ph));
+      ctx.fillStyle = `rgba(${style.dust},${a})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill();
+    }
+  }
+  // active line
+  const ln = timeline.find(l => t >= l.start && t <= l.start + l.dur + 0.25);
+  const cx = W/2, cy = H*0.44;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  if(ln){
+    const lt = t - ln.start;
+    const outStart = ln.dur - 0.45;
+    const out = lt > outStart ? 1 - clamp01((lt - outStart)/0.45) : 1;
+    const words = ln.words;
+    let fs = Math.min(W*0.115, 96);
+    ctx.font = fontStr(fs, 900);
+    let widths = words.map(w => ctx.measureText(w).width);
+    let gap = fs*0.32;
+    let totalW = widths.reduce((a,b)=>a+b,0) + gap*(words.length-1);
+    if(totalW > W*0.86){
+      fs = Math.max(26, fs * (W*0.86) / totalW);
+      ctx.font = fontStr(fs, 900);
+      widths = words.map(w => ctx.measureText(w).width);
+      gap = fs*0.32;
+      totalW = widths.reduce((a,b)=>a+b,0) + gap*(words.length-1);
+    }
+    let x = cx - totalW/2;
+    const stag = 0.13, animT = 0.55;
+    words.forEach((wd,i)=>{
+      const wstart = i*stag;
+      const p = clamp01((lt - wstart)/animT);
+      if(p <= 0){ x += widths[i] + gap; return; }
+      const e = easeOut(p);
+      const y = cy + (1-e)*34;
+      const sc = 1.18 - 0.18*e;
+      const alpha = e * out;
+      ctx.save();
+      ctx.translate(x + widths[i]/2, y); ctx.scale(sc, sc);
+      ctx.globalAlpha = alpha;
+      ctx.shadowColor = `rgba(${style.glow},0.85)`;
+      ctx.shadowBlur = 26 * e;
+      ctx.fillStyle = grad(ln.hi ? style.hi : style.fg, 0, -fs/2, 0);
+      ctx.fillText(wd, 0, 0);
+      ctx.restore();
+      x += widths[i] + gap;
+    });
+    // underline for highlight lines
+    if(ln.hi){
+      const up = clamp01((lt - words.length*stag - 0.2)/0.5);
+      if(up > 0){
+        ctx.save(); ctx.globalAlpha = up * out;
+        ctx.strokeStyle = style.hi[0]; ctx.lineWidth = 3; ctx.lineCap = "round";
+        ctx.shadowColor = `rgba(${style.glow},0.9)`; ctx.shadowBlur = 12;
+        ctx.beginPath(); ctx.moveTo(cx - totalW/2, cy + fs*0.72);
+        ctx.lineTo(cx - totalW/2 + totalW*up, cy + fs*0.72); ctx.stroke(); ctx.restore();
+      }
+    }
+  }
+  // outro branding
+  const ot = t - (totalDur - 2.6);
+  if(ot > 0){
+    const p = clamp01(ot/0.7);
+    const out2 = clamp01((totalDur - t)/0.8);
+    ctx.save();
+    ctx.globalAlpha = p * out2;
+    ctx.font = fontStr(W*0.052, 700);
+    ctx.shadowColor = `rgba(${style.glow},0.9)`; ctx.shadowBlur = 22;
+    ctx.fillStyle = grad(style.hi, 0, H*0.5, 0);
+    ctx.fillText($("brand").value || "hello___editor", cx, H*0.5);
+    ctx.font = fontStr(W*0.026, 500); ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.fillText("✂  video editing", cx, H*0.5 + W*0.075);
+    ctx.restore();
+  }
+  return t;
+}
+function loop(now){
+  const t = drawFrame(now);
+  $("progbar").style.width = Math.min(100, t/totalDur*100) + "%";
+  if(t < totalDur + 0.1){ raf = requestAnimationFrame(loop); }
+  else stopAnim(true);
+}
+function stopAnim(done){
+  if(raf) cancelAnimationFrame(raf); raf = null;
+  if(done && activeRec) finishRec();
+}
+function startAnim(){
+  if(raf) cancelAnimationFrame(raf);
+  makeParticles(); t0 = performance.now();
+  raf = requestAnimationFrame(loop);
+}
+async function prep(){
+  const lines = parseLines();
+  if(!lines){ alert("Pehle kuch lyrics / text likho!"); return false; }
+  await document.fonts.ready;
+  await document.fonts.load("900 60px 'Noto Sans Devanagari'");
+  const q = +$("quality").value;
+  W = q; H = q * 16/9; cv.width = W; cv.height = H;
+  buildTimeline(lines);
+  $("stage").style.display = "block";
+  return true;
+}
+
+/* ---------- preview ---------- */
+$("prevBtn").onclick = async () => {
+  if(!(await prep())) return;
+  $("status").textContent = "Preview chal raha hai...";
+  startAnim();
+};
+
+/* ---------- record ---------- */
+let activeRec = null, audioCtx = null, audioEl = null;
+function pickMime(){
+  const cands = ["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  return cands.find(c => window.MediaRecorder && MediaRecorder.isTypeSupported(c)) || "";
+}
+$("goBtn").onclick = async () => {
+  if(!(await prep())) return;
+  const mime = pickMime();
+  if(!mime){ alert("Is browser me video recording support nahi hai. Chrome use karo."); return; }
+  $("goBtn").disabled = true; $("prevBtn").disabled = true;
+  $("out").style.display = "none";
+  const stream = cv.captureStream(30);
+  // optional music
+  if(musicFile){
+    try {
+      audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+      const buf = await musicFile.arrayBuffer();
+      const ab = await audioCtx.decodeAudioData(buf);
+      const src = audioCtx.createBufferSource(); src.buffer = ab;
+      const dest = audioCtx.createMediaStreamDestination();
+      const gain = audioCtx.createGain(); gain.gain.value = 1;
+      src.connect(gain); gain.connect(dest); gain.connect(audioCtx.destination);
+      dest.stream.getAudioTracks().forEach(tr => stream.addTrack(tr));
+      src.start(0); audioEl = src;
+    } catch(e){ console.warn("audio failed", e); }
+  }
+  const chunks = [];
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
+  activeRec = rec;
+  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+  rec.onstop = () => {
+    const ext = mime.includes("mp4") ? "mp4" : "webm";
+    const blob = new Blob(chunks, { type: mime.split(";")[0] });
+    const url = URL.createObjectURL(blob);
+    $("outv").src = url;
+    const fname = "reel-" + new Date().toISOString().slice(0,19).replace(/[:T]/g,"-") + "." + ext;
+    const dl = $("dlBtn"); dl.href = url; dl.download = fname;
+    dl.textContent = `⬇ Download karo (${(blob.size/1048576).toFixed(1)} MB ${ext.toUpperCase()})`;
+    $("out").style.display = "block";
+    $("shareBtn").onclick = async () => {
+      const file = new File([blob], fname, { type: blob.type });
+      if(navigator.canShare && navigator.canShare({ files:[file] })){
+        try { await navigator.share({ files:[file] }); } catch(e){}
+      } else alert("Is browser me direct share nahi hai - download karke bhejo.");
+    };
+    $("status").textContent = "Ho gaya! ✅";
+    $("goBtn").disabled = false; $("prevBtn").disabled = false;
+    activeRec = null;
+    if(audioEl){ try{audioEl.stop();}catch(e){} audioEl = null; }
+    if(audioCtx && audioCtx.state === "running") audioCtx.suspend();
+    $("out").scrollIntoView({ behavior:"smooth" });
+  };
+  if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+  rec.start(250);
+  $("status").textContent = "🔴 Recording... screen mat chhedo";
+  startAnim();
+};
+function finishRec(){ if(activeRec && activeRec.state !== "inactive") activeRec.stop(); }
+</script>
+</body>
+</html>
